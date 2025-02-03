@@ -29,7 +29,7 @@ jobs:
         with:
           version: latest
 
-      - uses: aquasecurity/trivy-action@latest
+      - uses: aquasecurity/trivy-action@master
 
         with:
 
@@ -48,3 +48,6 @@ jobs:
           sarif_file: trivy-report.sarif
 
           category: trivy
+
+
+
