@@ -1,0 +1,7 @@
+kind: Namespace
+apiversion: v1
+metadata: 
+  name: mfs
+  labels:
+    name: demo-a
+    

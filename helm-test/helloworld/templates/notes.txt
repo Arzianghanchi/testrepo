@@ -1,0 +1,3 @@
+welcome to helm deployment.
+Release name {{.Release.Name}}
+Chart Name helmd

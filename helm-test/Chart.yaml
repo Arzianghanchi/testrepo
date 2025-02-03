@@ -1,0 +1,5 @@
+apiVersion: v2
+name: helmd
+description: Helm char for k8s deployment
+type: infrastructure
+version: 0.1.0

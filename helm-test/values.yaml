@@ -1,0 +1,19 @@
+type: Namespace
+name: mfn
+labels:
+  name:demo-a
+kind: Deployment
+deploymentname: portfolio-deployment
+spec: 
+  replicas: 1
+  selector:
+    appname: portfolio
+  template:
+    appname: portfolio
+
+container:
+  name: portfolio-container
+  image: arzian/dockerhub:portfolio
+  ports:
+    containerport: 3000
+    
