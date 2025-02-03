@@ -23,15 +23,6 @@ jobs:
         with:
           version: latest
 
-      - name: Add Helm Repositories (if needed)
-        run: |
-          helm repo add stable https://charts.helm.sh/stable
-          helm repo update
-
-      - name: Deploy Helm Chart
-        run: |
-          helm upgrade --install my-release ./charts/helmchart --values ./tests/overrides-helmchart.yaml
-
       - name: Install Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -41,7 +32,7 @@ jobs:
           ignore-unfixed: true
           format: 'sarif'
           output: 'trivy-results.sarif'
-          path: 'charts/.'
+          path: 'helm-test/.'
 
       - name: Upload Trivy Scan Results to GitHub Security Tab
         uses: github/codeql-action/upload-sarif@v3
@@ -57,7 +48,8 @@ jobs:
       contents: read
 
     steps:
-
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -69,6 +61,3 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
-          
-      - name: Checkout Repository
-        uses: actions/checkout@v4
