@@ -1,0 +1,74 @@
+name: Helm Deploy, Trivy Scan & CodeQL Analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  security-events: write
+  contents: read
+
+jobs:
+  deploy-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: latest
+
+      - name: Add Helm Repositories (if needed)
+        run: |
+          helm repo add stable https://charts.helm.sh/stable
+          helm repo update
+
+      - name: Deploy Helm Chart
+        run: |
+          helm upgrade --install my-release ./charts/helmchart --values ./tests/overrides-helmchart.yaml
+
+      - name: Install Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          path: 'charts/.'
+
+      - name: Upload Trivy Scan Results to GitHub Security Tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  codeql-analysis:
+    name: Run CodeQL Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript,python,yaml  # Add other languages as needed
+  
+        
+      - name: Upload CodeQL Results`
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+          
+      - name: Checkout Repository
+        uses: actions/checkout@v4
